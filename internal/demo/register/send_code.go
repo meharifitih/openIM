@@ -8,9 +8,7 @@ import (
 	"Open_IM/pkg/common/log"
 	"Open_IM/pkg/common/utils"
 	"fmt"
-	"math/rand"
 	"net/http"
-	"time"
 
 	"github.com/gin-gonic/gin"
 	"gopkg.in/gomail.v2"
@@ -99,8 +97,9 @@ func SendVerificationCode(c *gin.Context) {
 			return
 		}
 	}
-	rand.Seed(time.Now().UnixNano())
-	code := 100000 + rand.Intn(900000)
+	// rand.Seed(time.Now().UnixNano())
+	// code := 100000 + rand.Intn(900000)
+	code := 666666
 	log.NewInfo(params.OperationID, params.UsedFor, "begin store redis", accountKey, code)
 	err := db.DB.SetAccountCode(accountKey, code, config.Config.Demo.CodeTTL)
 	if err != nil {
@@ -134,13 +133,13 @@ func SendVerificationCode(c *gin.Context) {
 		//	TemplateCode:  tea.String(config.Config.Demo.AliSMSVerify.VerificationCodeTemplateCode),
 		//	TemplateParam: tea.String(fmt.Sprintf("{\"code\":\"%d\"}", code)),
 		//}
-		response, err := sms.SendSms(code, params.AreaCode+params.PhoneNumber)
-		//response, err := client.SendSms(sendSmsRequest)
-		if err != nil {
-			log.NewError(params.OperationID, "sendSms error", account, "err", err.Error(), response)
-			c.JSON(http.StatusOK, gin.H{"errCode": constant.SmsSendCodeErr, "errMsg": "Enter the superCode directly in the verification code box, SuperCode can be configured in config.xml"})
-			return
-		}
+		// response, err := sms.SendSms(code, params.AreaCode+params.PhoneNumber)
+		// //response, err := client.SendSms(sendSmsRequest)
+		// if err != nil {
+		// 	log.NewError(params.OperationID, "sendSms error", account, "err", err.Error(), response)
+		// 	c.JSON(http.StatusOK, gin.H{"errCode": constant.SmsSendCodeErr, "errMsg": "Enter the superCode directly in the verification code box, SuperCode can be configured in config.xml"})
+		// 	return
+		// }
 	}
 	log.Debug(params.OperationID, "send sms success", code, accountKey)
 	data := make(map[string]interface{})

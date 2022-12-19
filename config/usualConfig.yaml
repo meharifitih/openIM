@@ -1,19 +1,19 @@
 etcd:
   userName:
   password:
-  secret: openIM123 # etcd 配置密钥
+  secret: openIM123
 
 mysql:
-  dbMysqlUserName: root #mysql用户名
-  dbMysqlPassword: openIM123 # mysql密码
+  dbMysqlUserName: root
+  dbMysqlPassword: openIM123
 
 mongo:
-  dbUserName: root #mongo用户名
-  dbPassword: openIM123  #mongo密码
+  dbUserName:  root
+  dbPassword: openIM123
 
 redis:
   dbUserName:
-  dbPassWord: openIM123 #redis密码
+  dbPassWord: openIM123
 
 kafka:
   SASLUserName:
@@ -21,11 +21,11 @@ kafka:
 
 credential:
   minio:
-    endpoint: http://127.0.0.1:10005 #发图片视频文件需要填写
+    endpoint: http://127.0.0.1:10005
     accessKeyID: root
     secretAccessKey: openIM123
 
-secret: tuoyun #建议修改
+secret: openIM123
 
 tokenpolicy:
   accessSecret: "open_im_server" #token生成相关 建议修改

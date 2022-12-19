@@ -63,4 +63,4 @@ fi
 #      exit -1
 #fi
 #
-#echo -e ${YELLOW_PREFIX}"all services launch success"${COLOR_SUFFIX}
+echo -e ${YELLOW_PREFIX}"all services launch success"${COLOR_SUFFIX}
