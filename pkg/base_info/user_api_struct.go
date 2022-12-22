@@ -2,6 +2,8 @@ package base_info
 
 import (
 	open_im_sdk "Open_IM/pkg/proto/sdk_ws"
+	"mime/multipart"
+	"time"
 )
 
 type GetUsersInfoReq struct {
@@ -55,4 +57,15 @@ type GetBlackIDListFromCacheReq struct {
 type GetBlackIDListFromCacheResp struct {
 	CommResp
 	UserIDList []string `json:"userIDList" binding:"required"`
+}
+
+type UserStory struct {
+	Id        uint                  `json:"id" form:"id" gorm:"primaryKey"`
+	Name      string                `json:"name,omitempty" form:"name"`
+	UserId    string                `json:"user_id,omitempty" form:"user_id" binding:"required"`
+	File      *multipart.FileHeader `json:"file,omitempty" form:"file" binding:"required" gorm:"-"`
+	Story     string                `json:"story,omitempty" form:"story"`
+	CreatedAt time.Time             `json:"created_at,omitempty"`
+	UpdatedAt time.Time             `json:"updated_at,omitempty"`
+	DeletedAt *time.Time            `json:"deleted_at,omitempty" gorm:"index"`
 }

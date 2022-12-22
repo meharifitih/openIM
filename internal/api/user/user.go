@@ -1,6 +1,7 @@
 package user
 
 import (
+	"Open_IM/internal/rpc/user"
 	jsonData "Open_IM/internal/utils"
 	api "Open_IM/pkg/base_info"
 	"Open_IM/pkg/common/config"
@@ -14,10 +15,12 @@ import (
 	rpc "Open_IM/pkg/proto/user"
 	"Open_IM/pkg/utils"
 	"context"
+	"fmt"
 	"net/http"
 	"strings"
 
 	"github.com/gin-gonic/gin"
+	"github.com/google/uuid"
 )
 
 func GetUsersInfoFromCache(c *gin.Context) {
@@ -512,4 +515,44 @@ func GetUsers(c *gin.Context) {
 	log.NewInfo(req.OperationID, utils.GetSelfFuncName(), resp)
 	c.JSON(http.StatusOK, resp)
 	return
+}
+
+var (
+	dst string = "./images"
+)
+
+const DefaultPageSize = 10
+
+func AddUserStory(c *gin.Context) {
+
+	params := api.UserStory{}
+	if err := c.Bind(&params); err != nil {
+		log.NewError("0", "BindJSON failed ", err.Error())
+		c.JSON(http.StatusBadRequest, gin.H{"errCode": 400, "errMsg": err.Error()})
+		return
+	}
+	file := params.File
+
+	split := strings.Split(file.Filename, ".")
+	fileName := uuid.NewString() + "." + split[1]
+	err := c.SaveUploadedFile(file, dst+`/`+fileName)
+
+	if err != nil {
+		c.Error(err)
+		return
+	}
+
+	imageUrl := fmt.Sprintf("/images/%s", fileName)
+	params.Story = imageUrl
+
+	banner, err := user.AddStory(c, &params)
+	if err != nil {
+		log.NewError("AddStory failed ", err.Error())
+		c.JSON(http.StatusBadRequest, gin.H{"errCode": 400, "errMsg": err.Error()})
+		return
+	}
+
+	log.NewInfo("AddStory api return ", banner)
+	c.JSON(http.StatusOK, banner)
+
 }

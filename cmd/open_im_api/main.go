@@ -3,11 +3,13 @@ package main
 import (
 	_ "Open_IM/cmd/open_im_api/docs"
 	apiAuth "Open_IM/internal/api/auth"
+	"Open_IM/internal/api/banner"
 	clientInit "Open_IM/internal/api/client_init"
 	"Open_IM/internal/api/conversation"
 	"Open_IM/internal/api/friend"
 	"Open_IM/internal/api/group"
 	"Open_IM/internal/api/manage"
+	"Open_IM/internal/api/minapp"
 	apiChat "Open_IM/internal/api/msg"
 	"Open_IM/internal/api/office"
 	"Open_IM/internal/api/organization"
@@ -42,6 +44,7 @@ import (
 // @license.url http://www.apache.org/licenses/LICENSE-2.0.html
 // @BasePath /
 func main() {
+
 	log.NewPrivateLog(constant.LogFileName)
 	gin.SetMode(gin.ReleaseMode)
 	f, _ := os.Create("../logs/api.log")
@@ -60,6 +63,20 @@ func main() {
 		r.GET("/metrics", promePkg.PrometheusHandler())
 	}
 	// user routing group, which handles user registration and login services
+	r.GET("/images/:id", banner.GetImage)
+	manageRouterGroup := r.Group("/manage")
+	{
+		manageRouterGroup.POST("/app", minapp.AddMiniApp)
+		manageRouterGroup.PATCH("/app/:name", minapp.UpdateMiniApp)
+		manageRouterGroup.GET("/app/:name", minapp.GetMiniApp)
+		manageRouterGroup.GET("/app", minapp.ListMiniApp)
+		manageRouterGroup.DELETE("/app/:name", minapp.DeleteMiniApp)
+
+		manageRouterGroup.POST("/banner", banner.AddBanner)
+		manageRouterGroup.GET("/banner/:name", banner.GetBanner)
+		manageRouterGroup.GET("/banner", banner.ListBanners)
+		manageRouterGroup.DELETE("/banner/:name", banner.DeleteBanner)
+	}
 	userRouterGroup := r.Group("/user")
 	{
 		userRouterGroup.POST("/update_user_info", user.UpdateUserInfo) //1
@@ -74,6 +91,10 @@ func main() {
 		userRouterGroup.POST("/account_check", manage.AccountCheck)       //1
 		//	userRouterGroup.POST("/get_users_online_status", manage.GetUsersOnlineStatus) //1
 		userRouterGroup.POST("/get_users", user.GetUsers)
+		userRouterGroup.POST("/story", user.AddUserStory)
+		userRouterGroup.GET("/story", user.GetUsers)
+		userRouterGroup.GET("/story/:id", user.GetUsers)
+		userRouterGroup.DELETE("/story/:id", user.GetUsers)
 	}
 	//friend routing group
 	friendRouterGroup := r.Group("/friend")

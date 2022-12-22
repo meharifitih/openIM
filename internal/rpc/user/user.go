@@ -1,7 +1,9 @@
 package user
 
 import (
+	"Open_IM/internal/rpc"
 	chat "Open_IM/internal/rpc/msg"
+	api "Open_IM/pkg/base_info"
 	"Open_IM/pkg/common/config"
 	"Open_IM/pkg/common/constant"
 	"Open_IM/pkg/common/db"
@@ -27,6 +29,15 @@ import (
 	"google.golang.org/grpc"
 	"gorm.io/gorm"
 )
+
+func AddStory(ctx context.Context, story *api.UserStory) (*api.UserStory, error) {
+	conn := rpc.DB()
+	err := conn.Model(&api.UserStory{}).Create(&story).Error
+	if err != nil {
+		return nil, err
+	}
+	return story, nil
+}
 
 type userServer struct {
 	rpcPort         int
