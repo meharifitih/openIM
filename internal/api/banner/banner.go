@@ -13,14 +13,16 @@ import (
 	"strings"
 
 	"github.com/gin-gonic/gin"
-	"github.com/google/uuid"
 )
 
-var (
-	dst string = "./images"
-)
+// var (
+// 	dst string = "./images"
+// )
 
-const DefaultPageSize = 10
+const (
+	DefaultPageSize        = 10
+	dst             string = "./images"
+)
 
 func AddBanner(c *gin.Context) {
 
@@ -33,7 +35,7 @@ func AddBanner(c *gin.Context) {
 	file := params.File
 
 	split := strings.Split(file.Filename, ".")
-	fileName := uuid.NewString() + "." + split[1]
+	fileName := params.Name + "." + split[1]
 	err := c.SaveUploadedFile(file, dst+`/`+fileName)
 
 	if err != nil {
@@ -41,7 +43,7 @@ func AddBanner(c *gin.Context) {
 		return
 	}
 
-	imageUrl := fmt.Sprintf("/images/%s", fileName)
+	imageUrl := fmt.Sprintf("/manage/images/%s", fileName)
 	params.ImgUrl = imageUrl
 
 	banner, err := banner.SaveBanner(c, &params)

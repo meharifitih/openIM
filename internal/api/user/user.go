@@ -17,6 +17,7 @@ import (
 	"context"
 	"fmt"
 	"net/http"
+	"strconv"
 	"strings"
 
 	"github.com/gin-gonic/gin"
@@ -555,4 +556,88 @@ func AddUserStory(c *gin.Context) {
 	log.NewInfo("AddStory api return ", banner)
 	c.JSON(http.StatusOK, banner)
 
+}
+
+func GetStory(c *gin.Context) {
+
+	params := api.UserStory{}
+	name := c.Param("name")
+	params.Name = name
+
+	story, err := user.GetStory(c, &params)
+	if err != nil {
+		log.NewError("GetStory failed ", err.Error())
+		c.JSON(http.StatusBadRequest, gin.H{"errCode": 400, "errMsg": err.Error()})
+		return
+	}
+
+	log.NewInfo("GetStory api return ", story)
+	c.JSON(http.StatusOK, story)
+}
+
+func toInt64(s string) (int64, error) {
+	i, err := strconv.ParseInt(s, 10, 64)
+	if err != nil {
+		return 0, err
+	}
+	return i, nil
+}
+
+func ListStory(c *gin.Context) {
+	filterParam := api.QueryParams{}
+	filter := api.FilterParams{}
+	err := c.BindQuery(&filterParam)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"errCode": 400, "errMsg": err.Error()})
+		return
+	}
+
+	if filterParam.Page == "" {
+		filter.Page = 1
+	} else {
+
+		p, err := toInt64(filterParam.Page)
+		if err != nil {
+			p = 1
+		}
+
+		filter.Page = p
+	}
+
+	if filterParam.PerPage == "" {
+		filter.PerPage = DefaultPageSize
+	} else {
+
+		pp, err := toInt64(filterParam.PerPage)
+		if err != nil {
+			pp = DefaultPageSize
+		}
+		filter.PerPage = pp
+	}
+
+	stories, err := user.ListStory(c, &filter)
+	if err != nil {
+		log.NewError("ListStory failed ", err.Error())
+		c.JSON(http.StatusBadRequest, gin.H{"errCode": 400, "errMsg": err.Error()})
+		return
+	}
+
+	log.NewInfo("ListStory api return ", stories)
+	c.JSON(http.StatusOK, stories)
+}
+
+func DeleteStory(c *gin.Context) {
+	params := api.UserStory{}
+	name := c.Param("name")
+	params.Name = name
+
+	_, err := user.DeleteStory(c, &params)
+	if err != nil {
+		log.NewError("DeleteStory failed ", err.Error())
+		c.JSON(http.StatusBadRequest, gin.H{"errCode": 400, "errMsg": err.Error()})
+		return
+	}
+
+	log.NewInfo("DeleteStory api return ", "banner deleted")
+	c.JSON(http.StatusOK, "story deleted")
 }

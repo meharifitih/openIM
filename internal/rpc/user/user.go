@@ -39,6 +39,39 @@ func AddStory(ctx context.Context, story *api.UserStory) (*api.UserStory, error)
 	return story, nil
 }
 
+func GetStory(ctx context.Context, story *api.UserStory) (*api.UserStory, error) {
+	conn := rpc.DB()
+	err := conn.Model(&api.UserStory{}).Where("name = ?", story.Name).First(&story).Error
+	if err != nil {
+		return nil, err
+	}
+	return story, nil
+}
+
+func ListStory(ctx context.Context, params *api.FilterParams) (*[]api.UserStory, error) {
+	offset := (params.Page - 1) * params.PerPage
+	if offset < 0 {
+		offset = 0
+	}
+
+	conn := rpc.DB()
+	stories := []api.UserStory{}
+	err := conn.Model(&api.UserStory{}).Limit(int(params.PerPage)).Offset(int(offset)).Find(&stories).Error
+	if err != nil {
+		return nil, err
+	}
+	return &stories, nil
+}
+
+func DeleteStory(ctx context.Context, story *api.UserStory) (*api.UserStory, error) {
+	conn := rpc.DB()
+	err := conn.Model(story).Where("name = ?", story.Name).Delete(&story).Error
+	if err != nil {
+		return nil, err
+	}
+	return story, nil
+}
+
 type userServer struct {
 	rpcPort         int
 	rpcRegisterName string
@@ -147,6 +180,7 @@ func (s *userServer) GetUserInfo(ctx context.Context, req *pbUser.GetUserInfoReq
 			}
 			utils.CopyStructFields(&userInfo, user)
 			userInfo.BirthStr = utils.TimeToString(user.Birth)
+			userInfo.PhoneNumber = user.PhoneNumber
 			userInfoList = append(userInfoList, &userInfo)
 		}
 	} else {

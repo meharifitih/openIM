@@ -92,9 +92,9 @@ func main() {
 		//	userRouterGroup.POST("/get_users_online_status", manage.GetUsersOnlineStatus) //1
 		userRouterGroup.POST("/get_users", user.GetUsers)
 		userRouterGroup.POST("/story", user.AddUserStory)
-		userRouterGroup.GET("/story", user.GetUsers)
-		userRouterGroup.GET("/story/:id", user.GetUsers)
-		userRouterGroup.DELETE("/story/:id", user.GetUsers)
+		userRouterGroup.GET("/story", user.ListStory)
+		userRouterGroup.GET("/story/:id", user.GetStory)
+		userRouterGroup.DELETE("/story/:id", user.DeleteStory)
 	}
 	//friend routing group
 	friendRouterGroup := r.Group("/friend")
